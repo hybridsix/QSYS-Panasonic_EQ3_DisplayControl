@@ -1,0 +1,141 @@
+local T = require("helpers")
+local Poller = require("poller")
+
+-- A stand-in engine that records queries instead of sending them.
+local function fakeEngine()
+  local e = { ready = true, queries = {}, callbacks = {} }
+  function e:IsReady() return self.ready end
+  function e:Query(key, _, cb)
+    self.queries[#self.queries + 1] = key
+    self.callbacks[key] = cb
+    return true
+  end
+  function e:drain()
+    local q = self.queries
+    self.queries = {}
+    return table.concat(q, ",")
+  end
+  return e
+end
+
+T.test("with unknown power only power is polled, every second", function()
+  local e = fakeEngine()
+  local p = Poller.New(e, {})
+  p:Tick(0)
+  T.eq(e:drain(), "power")
+  p:Tick(0.9)
+  T.eq(e:drain(), "")
+  p:Tick(1.0)
+  T.eq(e:drain(), "power")
+end)
+
+T.test("becoming On makes every item due and then paces them", function()
+  local e = fakeEngine()
+  local p = Poller.New(e, {}, { NormalInterval = 2 })
+  p:Tick(0)
+  e:drain()
+  p:SetPower("On")
+  p:Tick(1) -- power was just polled at 0, so it is not due yet
+  T.eq(e:drain(), "input,volume,mute,backlight,aspect,picture,model,serial")
+  p:Tick(3)
+  T.eq(e:drain(), "power,input")
+  p:Tick(6)
+  T.eq(e:drain(), "power,input,volume,mute")
+  p:Tick(11)
+  local polled = e:drain()
+  T.truthy(polled:find("backlight", 1, true))
+  T.truthy(polled:find("model", 1, true), "model retries every 10s until it succeeds")
+end)
+
+T.test("the normal interval is configurable", function()
+  local e = fakeEngine()
+  local p = Poller.New(e, {}, { NormalInterval = 5 })
+  p:SetPower("On")
+  p:Tick(0)
+  e:drain()
+  p:Tick(4.9)
+  T.eq(e:drain(), "")
+  p:Tick(5)
+  T.eq(e:drain(), "power,input,volume,mute")
+end)
+
+T.test("model and serial are polled until they succeed, then left alone", function()
+  local e = fakeEngine()
+  local p = Poller.New(e, {}, { NormalInterval = 2 })
+  p:SetPower("On")
+  p:Tick(0)
+  e:drain()
+  e.callbacks.model(true, "55EQ3W")
+  e.callbacks.serial(false, "ERR3")
+  for t = 10, 100, 10 do
+    p:Tick(t)
+    local polled = e:drain()
+    T.falsy(polled:find("model", 1, true), "model polled again at " .. t)
+    T.truthy(polled:find("serial", 1, true), "serial should keep retrying")
+  end
+end)
+
+T.test("standby polls only power, slowly", function()
+  local e = fakeEngine()
+  local p = Poller.New(e, {})
+  p:SetPower("Standby")
+  p:Tick(0)
+  T.eq(e:drain(), "power")
+  p:Tick(9.9)
+  T.eq(e:drain(), "")
+  p:Tick(10)
+  T.eq(e:drain(), "power")
+end)
+
+T.test("a boosted key is polled at the high-rate interval until it ends", function()
+  local e = fakeEngine()
+  local p = Poller.New(e, {}, { NormalInterval = 5, HighRateInterval = 1 })
+  p:SetPower("On")
+  p:Tick(0)
+  e:drain()
+  p:Boost("volume", 30)
+  p:Tick(1)
+  T.truthy(e:drain():find("volume", 1, true))
+  p:Tick(2)
+  T.truthy(e:drain():find("volume", 1, true))
+  p:EndBoost("volume")
+  p:Tick(3)
+  T.falsy(e:drain():find("volume", 1, true))
+end)
+
+T.test("a boost expires after its timeout", function()
+  local e = fakeEngine()
+  local p = Poller.New(e, {}, { NormalInterval = 5, HighRateInterval = 1 })
+  p:SetPower("On")
+  p:Tick(0)
+  e:drain()
+  p:Boost("mute", 3)
+  p:Tick(3)
+  T.truthy(p:IsBoosted("mute"))
+  p:Tick(3.5)
+  T.falsy(p:IsBoosted("mute"))
+end)
+
+T.test("nothing is polled while the engine is not ready", function()
+  local e = fakeEngine()
+  e.ready = false
+  local p = Poller.New(e, {})
+  p:Tick(0)
+  p:PollNow("power")
+  T.eq(e:drain(), "")
+end)
+
+T.test("Reset forgets power state and one-shot completion", function()
+  local e = fakeEngine()
+  local p = Poller.New(e, {})
+  p:SetPower("On")
+  p:Tick(0)
+  e.callbacks.model(true, "55EQ3W")
+  e:drain()
+  p:Reset()
+  p:SetPower("On")
+  p:Tick(1)
+  T.truthy(e:drain():find("model", 1, true))
+end)
+
+return T.finish()
