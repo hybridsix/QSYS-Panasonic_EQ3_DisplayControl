@@ -1,6 +1,6 @@
 {
   "name": "qsys-panasonic-eq3-display-control",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Q-SYS plugin for Panasonic TH-43EQ3W and TH-55EQ3W professional displays",
   "private": true,
   "scripts": {

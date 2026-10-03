@@ -88,7 +88,7 @@ for _, model in ipairs({ "Auto", "TH-43EQ3W", "TH-55EQ3W" }) do
     end
     T.truthy(#graphics > 0)
     T.eq(#GetPages(props), 1)
-    T.truthy(GetPrettyName(props):find(model == "Auto" and "Panasonic EQ3" or model, 1, true))
+    T.truthy(GetPrettyName(props):find(model == "Auto" and "Panasonic\xC2\xA0EQ3" or model, 1, true))
   end)
 end
 

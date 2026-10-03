@@ -37,7 +37,8 @@ end
 function GetPrettyName(props)
   local nbsp = "\xC2\xA0"
   local title = "EQ3" .. nbsp .. "Display" .. nbsp .. "Control"
-  return deviceName(props, title) .. "\n" .. modelOf(props).Name
+  local model = modelOf(props).Name:gsub("Panasonic ", "Panasonic" .. nbsp)
+  return deviceName(props, title) .. "\n" .. model
 end
 
 function GetProperties()

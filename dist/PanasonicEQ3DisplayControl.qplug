@@ -15,8 +15,8 @@
 
 PluginInfo = {
   Name = "Hybridsix Software~Displays~Panasonic~EQ3 Display Control",
-  Version = "0.1.2",
-  BuildVersion = "0.1.2.0",
+  Version = "0.1.3",
+  BuildVersion = "0.1.3.0",
   Id = "cbf8b894-fffe-4b09-bca8-837fd4070978",
   Author = "Michael King",
   Description = "Control Panasonic TH-43EQ3W and TH-55EQ3W professional displays from Q-SYS: power, input, volume, audio mute, backlight, aspect and picture mode over Panasonic LAN command control (TCP) with SHA-256 / MD5 command protect, and live status feedback.",
@@ -1433,7 +1433,8 @@ end
 function GetPrettyName(props)
   local nbsp = "\xC2\xA0"
   local title = "EQ3" .. nbsp .. "Display" .. nbsp .. "Control"
-  return deviceName(props, title) .. "\n" .. modelOf(props).Name
+  local model = modelOf(props).Name:gsub("Panasonic ", "Panasonic" .. nbsp)
+  return deviceName(props, title) .. "\n" .. model
 end
 
 function GetProperties()
