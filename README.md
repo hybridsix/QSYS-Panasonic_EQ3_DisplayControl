@@ -1,6 +1,6 @@
 # Panasonic EQ3 Display Control - Q-SYS Plugin
 
-**Author:** Michael King / Hybridsix  **Version:** 0.1.3  **Platform:** Q-SYS Designer, Panasonic TH-43EQ3W / TH-55EQ3W
+**Author:** Michael King / Hybridsix  **Version:** 0.1.4  **Platform:** Q-SYS Designer, Panasonic TH-43EQ3W / TH-55EQ3W
 
 A Q-SYS plugin that gives your Core direct control over a Panasonic EQ3 series display on the local network - power, input, volume, mute, backlight, aspect, picture mode, and live status, all from the schematic.
 
