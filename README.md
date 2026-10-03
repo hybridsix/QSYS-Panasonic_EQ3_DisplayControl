@@ -1,6 +1,6 @@
 # Panasonic EQ3 Display Control - Q-SYS Plugin
 
-**Author:** Michael King / Hybridsix  **Version:** 0.1.1  **Platform:** Q-SYS Designer, Panasonic TH-43EQ3W / TH-55EQ3W
+**Author:** Michael King / Hybridsix  **Version:** 0.1.2  **Platform:** Q-SYS Designer, Panasonic TH-43EQ3W / TH-55EQ3W
 
 A Q-SYS plugin that gives your Core direct control over a Panasonic EQ3 series display on the local network - power, input, volume, mute, backlight, aspect, picture mode, and live status, all from the schematic.
 
@@ -47,7 +47,7 @@ Display side:
 1. Download [PanasonicEQ3DisplayControl.qplug](https://github.com/hybridsix/QSYS-Panasonic_EQ3_DisplayControl/releases/latest/download/PanasonicEQ3DisplayControl.qplug) from the latest [release](https://github.com/hybridsix/QSYS-Panasonic_EQ3_DisplayControl/releases/latest), or use the copy in `dist/`
 2. Copy it to: `%USERPROFILE%\Documents\QSC\Q-Sys Designer\Plugins\QSYS Panasonic EQ3 Display Control\`
 3. Restart Q-SYS Designer (or use Manage Plugins to reload)
-4. Drag Displays -> Panasonic -> EQ3 Display Control from the component library onto your schematic
+4. Drag Hybridsix Software -> Displays -> Panasonic -> EQ3 Display Control from the component library onto your schematic
 5. Open the plugin's Properties panel and fill in:
 
 | Property | Description |

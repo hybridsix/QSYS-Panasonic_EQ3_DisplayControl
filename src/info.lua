@@ -14,7 +14,7 @@
 -- =============================================================
 
 PluginInfo = {
-  Name = "Displays~Panasonic~EQ3 Display Control",
+  Name = "Hybridsix Software~Displays~Panasonic~EQ3 Display Control",
   Version = "@VERSION@",
   BuildVersion = "@VERSION@.0",
   Id = "cbf8b894-fffe-4b09-bca8-837fd4070978",
